@@ -686,6 +686,79 @@ app.get('/api/vault/search', async (req, res) => {
   }
 })
 
+// ── Business Inputs ──────────────────────────────────────────────────────────
+// In-memory stores (persist for the lifetime of the server process)
+const businessInputs = {
+  expenses: [],
+  shipments: [],
+  inventory: [],
+}
+
+// List all inputs (or filter by type)
+app.get('/api/business-inputs', (req, res) => {
+  const { type } = req.query
+  if (type && businessInputs[type]) {
+    res.json(businessInputs[type])
+  } else {
+    res.json(businessInputs)
+  }
+})
+
+// Add an expense
+app.post('/api/business-inputs/expenses', (req, res) => {
+  const { description, amount, category, date } = req.body
+  if (!description || !amount) {
+    return res.status(400).json({ error: 'description and amount are required' })
+  }
+  const entry = {
+    id: `exp-${Date.now()}`,
+    description,
+    amount: parseFloat(amount),
+    category: category || 'General',
+    date: date || new Date().toISOString().split('T')[0],
+    createdAt: new Date().toISOString(),
+  }
+  businessInputs.expenses.unshift(entry)
+  res.status(201).json(entry)
+})
+
+// Add a shipment
+app.post('/api/business-inputs/shipments', (req, res) => {
+  const { orderId, carrier, status, eta, notes } = req.body
+  if (!orderId) {
+    return res.status(400).json({ error: 'orderId is required' })
+  }
+  const entry = {
+    id: `shp-${Date.now()}`,
+    orderId,
+    carrier: carrier || 'Unknown',
+    status: status || 'in_transit',
+    eta: eta || null,
+    notes: notes || '',
+    createdAt: new Date().toISOString(),
+  }
+  businessInputs.shipments.unshift(entry)
+  res.status(201).json(entry)
+})
+
+// Add an inventory note
+app.post('/api/business-inputs/inventory', (req, res) => {
+  const { sku, productName, change, reason } = req.body
+  if (!sku || change === undefined) {
+    return res.status(400).json({ error: 'sku and change are required' })
+  }
+  const entry = {
+    id: `inv-${Date.now()}`,
+    sku,
+    productName: productName || sku,
+    change: parseInt(change),
+    reason: reason || '',
+    createdAt: new Date().toISOString(),
+  }
+  businessInputs.inventory.unshift(entry)
+  res.status(201).json(entry)
+})
+
 // Health
 app.get('/health', (req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }))
 

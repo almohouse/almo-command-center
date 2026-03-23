@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sun,
+  Paperclip,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { path: '/council', label: 'Council', icon: Users, description: 'Chiefs meeting room' },
   { path: '/founder', label: 'Founder', icon: User, description: "Alaa's strategic view" },
   { path: '/personal', label: 'Personal', icon: Sun, description: "Moe's brief & vault" },
+  { path: '/paperclip', label: 'Paperclip', icon: Paperclip, description: 'Live Paperclip sync' },
 ]
 
 interface SidebarProps {

@@ -174,3 +174,48 @@ export interface VaultResult {
   updatedAt: string
   type: 'issue'
 }
+
+// Business Inputs
+export interface Expense {
+  id: string
+  description: string
+  amount: number
+  category: string
+  date: string
+  createdAt: string
+}
+
+export interface Shipment {
+  id: string
+  orderId: string
+  carrier: string
+  status: string
+  eta: string | null
+  notes: string
+  createdAt: string
+}
+
+export interface InventoryNote {
+  id: string
+  sku: string
+  productName: string
+  change: number
+  reason: string
+  createdAt: string
+}
+
+export interface BusinessInputs {
+  expenses: Expense[]
+  shipments: Shipment[]
+  inventory: InventoryNote[]
+}
+
+export const businessInputsApi = {
+  getAll: () => api.get<BusinessInputs>('/business-inputs'),
+  addExpense: (data: { description: string; amount: number; category?: string; date?: string }) =>
+    api.post<Expense>('/business-inputs/expenses', data),
+  addShipment: (data: { orderId: string; carrier?: string; status?: string; eta?: string; notes?: string }) =>
+    api.post<Shipment>('/business-inputs/shipments', data),
+  addInventory: (data: { sku: string; productName?: string; change: number; reason?: string }) =>
+    api.post<InventoryNote>('/business-inputs/inventory', data),
+}

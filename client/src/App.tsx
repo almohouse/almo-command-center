@@ -10,10 +10,11 @@ import { CockpitView } from './views/CockpitView'
 import { CouncilView } from './views/CouncilView'
 import { FounderView } from './views/FounderView'
 import { PersonalView } from './views/PersonalView'
+import { PaperclipView } from './views/PaperclipView'
 
 function ProtectedRoutes() {
   const { isAuthenticated } = useAuth()
-  
+
   if (!isAuthenticated) {
     return <LoginPage />
   }
@@ -29,6 +30,7 @@ function ProtectedRoutes() {
         <Route path="council" element={<CouncilView />} />
         <Route path="founder" element={<FounderView />} />
         <Route path="personal" element={<PersonalView />} />
+        <Route path="paperclip" element={<PaperclipView />} />
       </Route>
     </Routes>
   )

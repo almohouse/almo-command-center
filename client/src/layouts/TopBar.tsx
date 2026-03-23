@@ -1,4 +1,4 @@
-import { Bell, RefreshCw, Wifi, Smartphone, Monitor } from 'lucide-react'
+import { Bell, RefreshCw, Wifi, Smartphone, Monitor, Menu } from 'lucide-react'
 import { useClock } from '@/hooks/useClock'
 import { cn } from '@/lib/utils'
 import { useTravelMode } from './AppShell'
@@ -8,9 +8,10 @@ interface TopBarProps {
   isLoading?: boolean
   lastUpdated?: Date
   travelMode?: boolean
+  onMobileMenuToggle?: () => void
 }
 
-export function TopBar({ title, isLoading, lastUpdated }: TopBarProps) {
+export function TopBar({ title, isLoading, lastUpdated, onMobileMenuToggle }: TopBarProps) {
   const now = useClock()
   const { travelMode, toggleTravelMode } = useTravelMode()
 
@@ -29,17 +30,29 @@ export function TopBar({ title, isLoading, lastUpdated }: TopBarProps) {
   })
 
   return (
-    <header className="flex items-center justify-between px-6 py-3.5 border-b border-glass-border bg-surface-1/50 backdrop-blur-xl flex-shrink-0">
-      <div>
-        <h1 className="text-lg font-semibold text-white">{title}</h1>
-        {lastUpdated && (
-          <p className="text-xs text-text-tertiary mt-0.5">
-            Updated {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
-          </p>
+    <header className="flex items-center justify-between px-4 md:px-6 py-3.5 border-b border-glass-border bg-surface-1/50 backdrop-blur-xl flex-shrink-0">
+      <div className="flex items-center gap-3">
+        {/* Hamburger — mobile only, not in travel mode */}
+        {!travelMode && onMobileMenuToggle && (
+          <button
+            onClick={onMobileMenuToggle}
+            className="p-1.5 rounded-lg hover:bg-glass text-text-secondary hover:text-white transition-all md:hidden"
+            aria-label="Open navigation"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         )}
+        <div>
+          <h1 className="text-base md:text-lg font-semibold text-white">{title}</h1>
+          {lastUpdated && (
+            <p className="text-xs text-text-tertiary mt-0.5">
+              Updated {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 md:gap-3">
         {/* Live status */}
         <div className="flex items-center gap-1.5 text-xs text-accent-green">
           <Wifi className="w-3 h-3" />
@@ -71,7 +84,7 @@ export function TopBar({ title, isLoading, lastUpdated }: TopBarProps) {
           <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-accent-red rounded-full" />
         </button>
 
-        {/* Clock — hide on travel mode for space */}
+        {/* Clock — hide on mobile/travel mode for space */}
         {!travelMode && (
           <div className="text-right hidden md:block">
             <p className="text-sm font-mono font-bold text-white tabular-nums">{timeStr}</p>
