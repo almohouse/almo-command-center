@@ -101,7 +101,7 @@ export function IntelligenceView() {
         )}
       </section>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <section>
           <SectionHeader title="Competitive Pulse" subtitle="Competitor monitoring feed" icon={TrendingUp} accent="green" />
           <div className="glass-card p-6 flex flex-col items-center justify-center text-center h-48">
