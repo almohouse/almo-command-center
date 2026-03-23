@@ -161,7 +161,7 @@ export function CouncilView() {
       </div>
 
       {/* Live agent feed / session chat */}
-      <div className="glass-card flex flex-col" style={{ height: '500px' }}>
+      <div className="glass-card flex flex-col h-[60vh] min-h-[320px] max-h-[500px]">
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-glass-border">
           <p className="text-xs text-text-secondary">
             {sessionActive ? 'Session in progress' : `${liveMessages.length} live agent messages`}

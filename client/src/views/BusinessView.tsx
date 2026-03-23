@@ -429,8 +429,8 @@ export function BusinessView() {
       {/* ── Product Performance ── */}
       <section>
         <SectionHeader title="Product Performance" subtitle="SKU velocity & trends" icon={Package} accent="purple" />
-        <div className="glass-card overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="glass-card overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm min-w-[480px]">
             <thead>
               <tr className="border-b border-glass-border">
                 <th className="text-left px-4 py-3 metric-label">Product</th>

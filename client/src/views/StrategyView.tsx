@@ -218,7 +218,7 @@ export function StrategyView() {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-8 gap-2">
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
             {CHIEF_ROLES.map((chief, i) => {
               const isLive = i < chiefLiveCount
               return (

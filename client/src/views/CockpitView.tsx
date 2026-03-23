@@ -16,7 +16,7 @@ function ApprovalRow({
 }) {
   const isResolving = resolving === approval.id
   return (
-    <div className="glass-card p-4 flex items-center gap-4">
+    <div className="glass-card p-4 flex flex-wrap items-center gap-3">
       <div className="flex-1 min-w-0">
         <p className="text-sm text-white font-medium truncate">{approval.title || 'Approval request'}</p>
         <p className="text-xs text-text-secondary mt-0.5">
