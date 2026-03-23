@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart2, Cpu, Brain, Crosshair, Sun } from 'lucide-react'
+import { BarChart2, Paperclip, Brain, Crosshair, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // Show most important nav items in the bottom bar (5 max)
 const MOBILE_NAV_ITEMS = [
   { path: '/', label: 'Business', icon: BarChart2 },
-  { path: '/os', label: 'OS', icon: Cpu },
+  { path: '/paperclip', label: 'Agents', icon: Paperclip },
   { path: '/intelligence', label: 'Intel', icon: Brain },
   { path: '/cockpit', label: 'Cockpit', icon: Crosshair },
   { path: '/personal', label: 'Personal', icon: Sun },

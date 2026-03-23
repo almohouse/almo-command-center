@@ -100,8 +100,8 @@ export function OSView() {
           icon={Cpu}
           accent="blue"
         />
-        <div className="glass-card overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="glass-card overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b border-glass-border">
                 <th className="text-left px-4 py-3 metric-label">Agent</th>
@@ -172,7 +172,8 @@ export function OSView() {
           icon={GitBranch}
           accent="purple"
         />
-        <div className="grid grid-cols-5 gap-3">
+        <div className="overflow-x-auto pb-2">
+        <div className="grid grid-cols-5 gap-3 min-w-[640px]">
           {KANBAN_COLUMNS.map((col) => {
             const tasks = MOCK_PIPELINE[col.id as keyof typeof MOCK_PIPELINE] ?? []
             const isBottleneck = col.id === 'in_review' && tasks.length > 2
@@ -210,6 +211,7 @@ export function OSView() {
               </div>
             )
           })}
+        </div>
         </div>
       </section>
 
