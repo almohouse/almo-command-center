@@ -8,7 +8,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-const CORRECT_PASSWORD = '9190'
+const CORRECT_PASSWORD = import.meta.env.VITE_ACCESS_CODE || ''
 const AUTH_KEY = 'almo_cc_auth'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
