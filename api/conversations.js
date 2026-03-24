@@ -1,10 +1,8 @@
-import { pcGet, COMPANY_ID, corsHeaders } from './_lib/pc.js'
+import { pcGet, COMPANY_ID, corsHeaders, isUnavailable } from './_lib/pc.js'
 
 export default async function handler(req, res) {
   const h = corsHeaders()
-  if (req.method === 'OPTIONS') {
-    return res.writeHead(204, h).end()
-  }
+  if (req.method === 'OPTIONS') return res.writeHead(204, h).end()
   Object.entries(h).forEach(([k, v]) => res.setHeader(k, v))
 
   try {
@@ -41,6 +39,7 @@ export default async function handler(req, res) {
 
     res.status(200).json(conversations)
   } catch (err) {
+    if (isUnavailable(err)) return res.status(200).json([])
     res.status(200).json([])
   }
 }

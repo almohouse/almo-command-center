@@ -1,11 +1,11 @@
-import { pcGet, COMPANY_ID, corsHeaders } from './_lib/pc.js'
+import { pcGet, COMPANY_ID, corsHeaders, isUnavailable } from './_lib/pc.js'
 
 export default async function handler(req, res) {
   const h = corsHeaders()
-  if (req.method === 'OPTIONS') {
-    return res.writeHead(204, h).end()
-  }
+  if (req.method === 'OPTIONS') return res.writeHead(204, h).end()
   Object.entries(h).forEach(([k, v]) => res.setHeader(k, v))
+
+  const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   try {
     const [agentsRaw, issuesRaw] = await Promise.allSettled([
@@ -19,8 +19,6 @@ export default async function handler(req, res) {
     const blocked = issues.filter(i => i.status === 'blocked')
     const inProgress = issues.filter(i => i.status === 'in_progress')
     const critical = issues.filter(i => i.priority === 'critical')
-
-    const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
     res.status(200).json({
       date: dateStr,
@@ -40,6 +38,16 @@ export default async function handler(req, res) {
       revenue: { today: 18420, mtd: 284560, target: 400000, currency: 'SAR' },
     })
   } catch (err) {
+    if (isUnavailable(err)) {
+      return res.status(200).json({
+        date: dateStr,
+        generatedAt: new Date().toISOString(),
+        summary: { onlineAgents: 0, totalAgents: 0, blockedCount: 0, inProgressCount: 0, criticalCount: 0 },
+        topBlockers: [],
+        activeAgents: [],
+        revenue: { today: 18420, mtd: 284560, target: 400000, currency: 'SAR' },
+      })
+    }
     res.status(500).json({ error: err.message })
   }
 }
