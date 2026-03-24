@@ -1,4 +1,11 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+async function openAuthenticatedRoute(page: Page, path: string) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('almo_cc_auth', 'true')
+  })
+  await page.goto(path)
+}
 
 const MOCK_AGENTS = [
   { id: 'a1', name: 'ALMO Deputy CEO', role: 'general', status: 'online', completionRate: 90, revisionRate: 5, avgTaskHours: 2, tasksCompleted: 20, tasksRevised: 2, trend7d: [5,6,5,7,6,8,7] },
@@ -14,7 +21,7 @@ test.describe('Decision Cockpit', () => {
     await page.route('**/api/approvals', (route) => route.fulfill({ json: [] }))
     await page.route('**/api/agents', (route) => route.fulfill({ json: MOCK_AGENTS }))
     await page.route('**/api/conversations', (route) => route.fulfill({ json: MOCK_CONVERSATIONS }))
-    await page.goto('/cockpit')
+    await openAuthenticatedRoute(page, '/cockpit')
   })
 
   test('shows approval queue section with live data state', async ({ page }) => {

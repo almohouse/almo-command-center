@@ -1,8 +1,22 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type BrowserContext, type Page } from '@playwright/test'
+
+async function installDeterministicAuthState(context: BrowserContext) {
+  await context.clearCookies()
+  await context.addInitScript(() => {
+    window.localStorage.clear()
+    window.sessionStorage.clear()
+    window.localStorage.setItem('almo_cc_auth', 'true')
+  })
+}
+
+async function openAuthenticatedApp(page: Page) {
+  await installDeterministicAuthState(page.context())
+  await page.goto('/')
+}
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await openAuthenticatedApp(page)
   })
 
   test('loads the Business view by default', async ({ page }) => {
@@ -69,5 +83,97 @@ test.describe('Navigation', () => {
     // Expand again
     await toggleBtn.click()
     await expect(page.getByRole('link', { name: 'Business' })).toBeVisible()
+  })
+})
+
+test.describe('Mobile navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openAuthenticatedApp(page)
+  })
+
+  test('opens a drawer from the hamburger trigger and closes via overlay', async ({ page }) => {
+    const openNavButton = page.getByRole('button', { name: 'Open navigation' })
+    await expect(openNavButton).toBeVisible()
+    await openNavButton.click()
+
+    const mobileDialog = page.getByRole('dialog', { name: 'Mobile navigation' })
+    await expect(mobileDialog).toBeVisible()
+    await expect(mobileDialog.getByRole('link', { name: 'Business' })).toBeVisible()
+
+    await page.mouse.click(360, 80)
+    await expect(mobileDialog).toBeHidden()
+  })
+
+  test('closes the mobile drawer after selecting a destination', async ({ page }) => {
+    await page.getByRole('button', { name: 'Open navigation' }).click()
+    await page.getByRole('dialog', { name: 'Mobile navigation' }).getByRole('link', { name: 'Cockpit' }).click()
+
+    await expect(page.locator('h1')).toContainText('Decision Cockpit')
+    await expect(page.getByRole('dialog', { name: 'Mobile navigation' })).toBeHidden()
+  })
+
+  test('shows bottom navigation shortcuts without overlapping the page content', async ({ page }) => {
+    await expect(page.getByRole('link', { name: 'Agents' })).toBeVisible()
+    await expect(page.getByText('Salla Store Health')).toBeVisible()
+  })
+
+  test('keeps product tables horizontally usable on mobile', async ({ page }) => {
+    const scroller = page.getByTestId('product-performance-table-scroll')
+    await expect(scroller).toBeVisible()
+    await expect(page.getByText('Swipe to view all product columns')).toBeVisible()
+
+    const metrics = await scroller.evaluate((el) => ({
+      clientWidth: el.clientWidth,
+      scrollWidth: el.scrollWidth,
+    }))
+
+    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth)
+  })
+
+  test('keeps OS data grids horizontally usable on mobile', async ({ page }) => {
+    await page.goto('/os')
+
+    const matrixScroller = page.getByTestId('agent-performance-table-scroll')
+    const pipelineScroller = page.getByTestId('pipeline-flow-scroll')
+
+    await expect(matrixScroller).toBeVisible()
+    await expect(pipelineScroller).toBeVisible()
+    await expect(page.getByText('Swipe to compare all agent metrics')).toBeVisible()
+    await expect(page.getByText('Swipe across stages to review the full pipeline')).toBeVisible()
+
+    const matrixMetrics = await matrixScroller.evaluate((el) => ({
+      clientWidth: el.clientWidth,
+      scrollWidth: el.scrollWidth,
+    }))
+    const pipelineMetrics = await pipelineScroller.evaluate((el) => ({
+      clientWidth: el.clientWidth,
+      scrollWidth: el.scrollWidth,
+    }))
+
+    expect(matrixMetrics.scrollWidth).toBeGreaterThan(matrixMetrics.clientWidth)
+    expect(pipelineMetrics.scrollWidth).toBeGreaterThan(pipelineMetrics.clientWidth)
+  })
+
+  test('stacks responsive summary cards cleanly on mobile', async ({ page }) => {
+    const businessMetrics = page.getByTestId('store-health-metrics')
+    await expect(businessMetrics).toBeVisible()
+
+    const businessColumns = await businessMetrics.evaluate((el) => getComputedStyle(el).gridTemplateColumns)
+    expect(businessColumns.split(' ').length).toBe(1)
+
+    await page.goto('/founder')
+    await page.getByPlaceholder('Enter PIN').fill('1234')
+    await page.getByRole('button', { name: 'Enter Portal' }).click()
+    const founderMetrics = page.getByTestId('founder-overview-metrics')
+    await expect(founderMetrics).toBeVisible()
+    const founderColumns = await founderMetrics.evaluate((el) => getComputedStyle(el).gridTemplateColumns)
+    expect(founderColumns.split(' ').length).toBe(1)
+
+    await page.goto('/paperclip')
+    const paperclipMetrics = page.getByTestId('paperclip-summary-cards')
+    await expect(paperclipMetrics).toBeVisible()
+    const paperclipColumns = await paperclipMetrics.evaluate((el) => getComputedStyle(el).gridTemplateColumns)
+    expect(paperclipColumns.split(' ').length).toBe(2)
   })
 })

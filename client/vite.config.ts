@@ -18,4 +18,6 @@ export default defineConfig({
       },
     },
   },
+  // Production build: no proxy needed — Vercel Serverless Functions serve /api/*
+  // in the same origin as the static frontend
 })

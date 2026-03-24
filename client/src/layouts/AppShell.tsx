@@ -43,6 +43,19 @@ export function AppShell() {
     setMobileMenuOpen(false)
   }, [location.pathname])
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [mobileMenuOpen])
+
   return (
     <TravelModeContext.Provider value={{ travelMode, toggleTravelMode: () => setTravelMode(m => !m) }}>
       <div className={cn('flex h-screen overflow-hidden bg-surface-0', travelMode && 'travel-mode')}>
@@ -56,11 +69,19 @@ export function AppShell() {
         {/* Mobile sidebar overlay */}
         {!travelMode && mobileMenuOpen && (
           <>
-            <div
+            <button
+              type="button"
               className="fixed inset-0 bg-black/60 z-40 md:hidden"
+              aria-label="Close navigation menu"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <div className="fixed left-0 top-0 h-full z-50 md:hidden">
+            <div
+              id="mobile-navigation"
+              className="fixed left-0 top-0 h-full z-50 md:hidden w-[min(20rem,85vw)] max-w-full"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile navigation"
+            >
               <Sidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} />
             </div>
           </>
@@ -70,6 +91,7 @@ export function AppShell() {
           <TopBar
             title={title}
             travelMode={travelMode}
+            mobileMenuOpen={mobileMenuOpen}
             onMobileMenuToggle={() => setMobileMenuOpen(o => !o)}
           />
           <main className={cn(

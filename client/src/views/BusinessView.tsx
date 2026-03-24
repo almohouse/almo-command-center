@@ -374,7 +374,7 @@ export function BusinessView() {
       {/* ── Store Health ── */}
       <section>
         <SectionHeader title="Salla Store Health" subtitle="Live store metrics" icon={ShoppingCart} accent="blue" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div data-testid="store-health-metrics" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
           <MetricCard
             label="Orders Today"
             value={salla.ordersToday}
@@ -429,8 +429,16 @@ export function BusinessView() {
       {/* ── Product Performance ── */}
       <section>
         <SectionHeader title="Product Performance" subtitle="SKU velocity & trends" icon={Package} accent="purple" />
-        <div className="glass-card overflow-hidden overflow-x-auto">
-          <table className="w-full text-sm min-w-[480px]">
+        <div className="glass-card overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-glass-border px-4 py-3 md:hidden">
+            <p className="text-xs text-text-secondary">Swipe to view all product columns</p>
+            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-text-tertiary">Mobile scroll</span>
+          </div>
+          <div
+            data-testid="product-performance-table-scroll"
+            className="overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]"
+          >
+          <table className="w-full text-sm min-w-[520px]">
             <thead>
               <tr className="border-b border-glass-border">
                 <th className="text-left px-4 py-3 metric-label">Product</th>
@@ -467,6 +475,7 @@ export function BusinessView() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 

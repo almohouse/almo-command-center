@@ -8,10 +8,11 @@ interface TopBarProps {
   isLoading?: boolean
   lastUpdated?: Date
   travelMode?: boolean
+  mobileMenuOpen?: boolean
   onMobileMenuToggle?: () => void
 }
 
-export function TopBar({ title, isLoading, lastUpdated, onMobileMenuToggle }: TopBarProps) {
+export function TopBar({ title, isLoading, lastUpdated, mobileMenuOpen = false, onMobileMenuToggle }: TopBarProps) {
   const now = useClock()
   const { travelMode, toggleTravelMode } = useTravelMode()
 
@@ -37,7 +38,9 @@ export function TopBar({ title, isLoading, lastUpdated, onMobileMenuToggle }: To
           <button
             onClick={onMobileMenuToggle}
             className="p-1.5 rounded-lg hover:bg-glass text-text-secondary hover:text-white transition-all md:hidden"
-            aria-label="Open navigation"
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             <Menu className="w-5 h-5" />
           </button>

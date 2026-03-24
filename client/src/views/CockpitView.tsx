@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
-import { Crosshair, CheckCircle, XCircle, Send, MessageSquare, RefreshCw, CheckSquare } from 'lucide-react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { Crosshair, CheckCircle, XCircle, Send, MessageSquare, RefreshCw, CheckSquare, Wifi, WifiOff } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { SectionHeader } from '@/components/cards/SectionHeader'
 import { paperclipApi, type Approval, type Conversation } from '@/api/paperclip'
 import { cn } from '@/lib/utils'
+import { useLivePaperclipSync } from '@/hooks/useLivePaperclipSync'
 
 function ApprovalRow({
   approval,
@@ -99,6 +100,8 @@ function ConversationFeed({ conversations, isLoading }: { conversations: Convers
 
 export function CockpitView() {
   const queryClient = useQueryClient()
+  const liveQueryKeys = useMemo(() => [['approvals'], ['agents'], ['conversations']], [])
+  const { status: liveStatus } = useLivePaperclipSync({ queryKeys: liveQueryKeys })
   const [command, setCommand] = useState('')
   const [selectedAgentId, setSelectedAgentId] = useState('')
   const [commandStatus, setCommandStatus] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
@@ -162,13 +165,28 @@ export function CockpitView() {
   return (
     <div className="space-y-8 animate-slide-in-up">
       <section>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <SectionHeader
             title="Approval Queue"
             subtitle={approvalsLoading ? 'Loading…' : visibleApprovals.length === 0 ? 'No pending decisions' : `${visibleApprovals.length} pending decision${visibleApprovals.length !== 1 ? 's' : ''}`}
             icon={Crosshair}
             accent="blue"
           />
+          <div className="flex items-center gap-2 flex-wrap">
+            <div
+              data-testid="cockpit-live-badge"
+              className={cn(
+                'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs',
+                liveStatus === 'live'
+                  ? 'bg-accent-green/10 text-accent-green border-accent-green/20'
+                  : liveStatus === 'offline'
+                    ? 'bg-glass text-text-secondary border-glass-border'
+                    : 'bg-accent-yellow/10 text-accent-yellow border-accent-yellow/20'
+              )}
+            >
+              {liveStatus === 'live' ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+              {liveStatus === 'live' ? 'Live auto-sync' : liveStatus === 'offline' ? 'Offline' : 'Reconnecting'}
+            </div>
           <button
             onClick={() => refetchApprovals()}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-glass-border text-xs text-text-secondary hover:text-white transition-colors"
@@ -176,6 +194,7 @@ export function CockpitView() {
             <RefreshCw className="w-3 h-3" />
             Refresh
           </button>
+          </div>
         </div>
 
         {approvalsLoading ? (

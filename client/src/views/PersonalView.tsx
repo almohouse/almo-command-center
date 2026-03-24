@@ -73,7 +73,7 @@ function MorningBriefPanel() {
         </div>
 
         {/* Summary stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div data-testid="personal-summary-cards" className="grid grid-cols-1 min-[380px]:grid-cols-2 xl:grid-cols-4 gap-3">
           <div className="glass-card p-3 text-center">
             <p className="text-xl font-bold text-accent-blue">{brief.summary.onlineAgents}/{brief.summary.totalAgents}</p>
             <p className="text-xs text-text-secondary mt-0.5">Agents Online</p>

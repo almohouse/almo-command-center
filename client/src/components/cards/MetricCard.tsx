@@ -43,19 +43,19 @@ export function MetricCard({
   children,
 }: MetricCardProps) {
   return (
-    <div className={cn('glass-card p-5 flex flex-col gap-3', className)}>
-      <div className="flex items-start justify-between">
-        <p className="metric-label">{label}</p>
+    <div className={cn('glass-card min-h-[9.5rem] p-4 sm:p-5 flex flex-col gap-3', className)}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="metric-label leading-relaxed pr-2">{label}</p>
         {Icon && (
-          <div className={cn('p-2 rounded-lg', ACCENT_BG[accent])}>
+          <div className={cn('p-2 rounded-lg shrink-0', ACCENT_BG[accent])}>
             <Icon className={cn('w-4 h-4', ACCENT_CLASSES[accent])} />
           </div>
         )}
       </div>
 
-      <div>
-        <p className={cn('metric-value', ACCENT_CLASSES[accent])}>{value}</p>
-        {subtitle && <p className="text-xs text-text-secondary mt-1">{subtitle}</p>}
+      <div className="min-w-0">
+        <p className={cn('metric-value break-words text-[1.75rem] sm:text-[2rem]', ACCENT_CLASSES[accent])}>{value}</p>
+        {subtitle && <p className="text-xs text-text-secondary mt-1 leading-relaxed break-words">{subtitle}</p>}
       </div>
 
       {trend && trendValue && (

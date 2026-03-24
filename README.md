@@ -46,6 +46,14 @@ npm run test:e2e
 npm run test:e2e:ui
 ```
 
+### Deterministic Playwright auth
+
+The navigation E2E tests do not rely on whatever local browser state happened to exist before the run.
+
+- Each test clears cookies plus local/session storage via a Playwright init script.
+- The test then seeds `localStorage.almo_cc_auth = "true"` before the app loads.
+- This makes auth bypass deterministic for automated runs while keeping the real login flow intact for manual usage.
+
 ## Environment
 
 ```env

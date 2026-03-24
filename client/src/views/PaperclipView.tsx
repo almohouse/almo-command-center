@@ -1,9 +1,11 @@
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Paperclip, Users, ListChecks, FolderOpen, CheckCircle, RefreshCw, Clock, AlertCircle } from 'lucide-react'
+import { Paperclip, Users, ListChecks, FolderOpen, CheckCircle, RefreshCw, Clock, AlertCircle, Wifi, WifiOff } from 'lucide-react'
 import { SectionHeader } from '@/components/cards/SectionHeader'
 import { paperclipApi, type Agent, type Issue, type Project, type Approval } from '@/api/paperclip'
 import { cn } from '@/lib/utils'
 import { formatRelativeTime } from '@/lib/utils'
+import { useLivePaperclipSync } from '@/hooks/useLivePaperclipSync'
 
 const STATUS_STYLES: Record<string, string> = {
   todo: 'bg-glass text-text-secondary border-glass-border',
@@ -67,6 +69,18 @@ function IssueRow({ issue }: { issue: Issue }) {
 }
 
 export function PaperclipView() {
+  const liveQueryKeys = useMemo(
+    () => [
+      ['paperclip-agents'],
+      ['paperclip-issues-active'],
+      ['paperclip-projects'],
+      ['paperclip-approvals'],
+    ],
+    []
+  )
+
+  const { status: liveStatus, lastSyncAt } = useLivePaperclipSync({ queryKeys: liveQueryKeys })
+
   const { data: agents = [], isLoading: agentsLoading, refetch: refetchAgents } = useQuery({
     queryKey: ['paperclip-agents'],
     queryFn: () => paperclipApi.agents(),
@@ -109,22 +123,43 @@ export function PaperclipView() {
     <div className="space-y-6 animate-slide-in-up">
 
       {/* Header summary */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-white font-semibold">Paperclip Live Sync</h2>
-          <p className="text-xs text-text-tertiary mt-0.5">Real-time agent & task data · refreshes every 30s</p>
+          <p className="text-xs text-text-tertiary mt-0.5">Live agent, task, and approval data with automatic background refresh</p>
         </div>
-        <button
+        <div className="flex items-center gap-2 flex-wrap">
+          <div
+            data-testid="paperclip-live-badge"
+            className={cn(
+              'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs',
+              liveStatus === 'live'
+                ? 'bg-accent-green/10 text-accent-green border-accent-green/20'
+                : liveStatus === 'offline'
+                  ? 'bg-glass text-text-secondary border-glass-border'
+                  : 'bg-accent-yellow/10 text-accent-yellow border-accent-yellow/20'
+            )}
+          >
+            {liveStatus === 'live' ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+            {liveStatus === 'live' ? 'Live auto-sync' : liveStatus === 'offline' ? 'Offline' : 'Reconnecting'}
+          </div>
+          {lastSyncAt && (
+            <span data-testid="paperclip-last-sync" className="text-xs text-text-tertiary">
+              Updated {formatRelativeTime(lastSyncAt.toISOString())}
+            </span>
+          )}
+          <button
           onClick={handleRefreshAll}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-glass-border text-xs text-text-secondary hover:text-white transition-colors"
         >
           <RefreshCw className="w-3 h-3" />
           Refresh
         </button>
+        </div>
       </div>
 
       {/* Summary chips */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div data-testid="paperclip-summary-cards" className="grid grid-cols-1 min-[380px]:grid-cols-2 xl:grid-cols-4 gap-3">
         <div className="glass-card p-3 text-center">
           <p className="text-xl font-bold text-white">{agentsLoading ? '…' : agents.length}</p>
           <p className="text-xs text-text-secondary mt-1">Agents</p>

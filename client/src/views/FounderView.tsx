@@ -102,7 +102,7 @@ export function FounderView() {
       </div>
 
       <SectionHeader title="Strategic Overview" subtitle="Key business metrics" icon={TrendingUp} accent="purple" />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div data-testid="founder-overview-metrics" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <MetricCard
           label="Monthly Revenue"
           value={formatCurrency(salla.revenueMTD)}
