@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         name: a.name,
         task: inProgress.find(i => i.assigneeAgentId === a.id)?.identifier || null,
       })),
-      revenue: { today: 18420, mtd: 284560, target: 400000, currency: 'SAR' },
+      revenue: null,
     })
   } catch (err) {
     if (isUnavailable(err)) {
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         summary: { onlineAgents: 0, totalAgents: 0, blockedCount: 0, inProgressCount: 0, criticalCount: 0 },
         topBlockers: [],
         activeAgents: [],
-        revenue: { today: 18420, mtd: 284560, target: 400000, currency: 'SAR' },
+        revenue: null,
       })
     }
     res.status(500).json({ error: err.message })

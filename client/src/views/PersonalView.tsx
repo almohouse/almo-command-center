@@ -56,8 +56,6 @@ function MorningBriefPanel() {
     )
   }
 
-  const revenueProgress = Math.round((brief.revenue.mtd / brief.revenue.target) * 100)
-
   return (
     <div className="space-y-4">
       {/* Brief header */}
@@ -97,26 +95,28 @@ function MorningBriefPanel() {
         </div>
       </div>
 
-      {/* Revenue */}
-      <div className="glass-card p-5">
-        <div className="flex items-center justify-between mb-2">
-          <p className="metric-label flex items-center gap-2">
-            <TrendingUp className="w-3.5 h-3.5 text-accent-green" />
-            Revenue
-          </p>
-          <p className="text-sm font-bold text-white">{formatCurrency(brief.revenue.mtd)} MTD</p>
+      {/* Revenue — only shown when real data is available (Phase 2) */}
+      {brief.revenue && (
+        <div className="glass-card p-5">
+          <div className="flex items-center justify-between mb-2">
+            <p className="metric-label flex items-center gap-2">
+              <TrendingUp className="w-3.5 h-3.5 text-accent-green" />
+              Revenue
+            </p>
+            <p className="text-sm font-bold text-white">{formatCurrency(brief.revenue.mtd)} MTD</p>
+          </div>
+          <div className="h-2 bg-glass rounded-full overflow-hidden mb-1.5">
+            <div
+              className="h-full bg-gradient-to-r from-accent-blue to-accent-green rounded-full transition-all"
+              style={{ width: `${Math.min(Math.round((brief.revenue.mtd / brief.revenue.target) * 100), 100)}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs text-text-secondary">
+            <span>{Math.round((brief.revenue.mtd / brief.revenue.target) * 100)}% of {brief.revenue.currency} {(brief.revenue.target / 1000).toFixed(0)}K goal</span>
+            <span>{formatCurrency(brief.revenue.today)} today</span>
+          </div>
         </div>
-        <div className="h-2 bg-glass rounded-full overflow-hidden mb-1.5">
-          <div
-            className="h-full bg-gradient-to-r from-accent-blue to-accent-green rounded-full transition-all"
-            style={{ width: `${Math.min(revenueProgress, 100)}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between text-xs text-text-secondary">
-          <span>{revenueProgress}% of {brief.revenue.currency} {(brief.revenue.target / 1000).toFixed(0)}K goal</span>
-          <span>{formatCurrency(brief.revenue.today)} today</span>
-        </div>
-      </div>
+      )}
 
       {/* Top blockers */}
       {brief.topBlockers.length > 0 && (

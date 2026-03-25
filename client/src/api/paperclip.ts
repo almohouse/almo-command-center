@@ -155,7 +155,7 @@ export interface MorningBrief {
   }
   topBlockers: { id: string; identifier: string; title: string; priority: string }[]
   activeAgents: { name: string; task: string | null }[]
-  revenue: { today: number; mtd: number; target: number; currency: string }
+  revenue: { today: number; mtd: number; target: number; currency: string } | null
 }
 
 export interface VaultSearchResult {

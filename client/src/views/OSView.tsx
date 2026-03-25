@@ -1,9 +1,7 @@
-import { Cpu, Activity, GitBranch } from 'lucide-react'
+import { Cpu, Activity, GitBranch, Clock } from 'lucide-react'
 import { SectionHeader } from '@/components/cards/SectionHeader'
 import { SparkLine } from '@/components/charts/SparkLine'
-import { MiniAreaChart } from '@/components/charts/MiniAreaChart'
 import { useDashboard } from '@/hooks/useDashboard'
-import { getStatusColor, formatRelativeTime } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 // Simulated agent performance data (real data from /api/agents when server is live)
@@ -15,60 +13,6 @@ const MOCK_AGENTS = [
   { id: '5', name: 'DCEO', role: 'Deputy CEO', status: 'online', completionRate: 97, revisionRate: 3, avgTaskHours: 1.9, trend7d: [10,11,12,11,13,12,14] },
 ]
 
-const KANBAN_COLUMNS = [
-  { id: 'backlog', label: 'Backlog', color: '#64748b' },
-  { id: 'todo', label: 'To Do', color: '#f59e0b' },
-  { id: 'in_progress', label: 'In Progress', color: '#3b82f6' },
-  { id: 'in_review', label: 'In Review', color: '#8b5cf6' },
-  { id: 'done', label: 'Done', color: '#10b981' },
-]
-
-// Mock pipeline data
-const MOCK_PIPELINE = {
-  backlog: [
-    { id: 'ALM-61', title: 'Salla API integration', priority: 'high', agent: 'CTO' },
-    { id: 'ALM-62', title: 'CFO hiring', priority: 'medium', agent: null },
-  ],
-  todo: [
-    { id: 'ALM-60', title: 'Brand social media strategy', priority: 'high', agent: 'CMO' },
-    { id: 'ALM-58', title: 'Q1 financial report', priority: 'medium', agent: 'CFO' },
-  ],
-  in_progress: [
-    { id: 'ALM-59', title: 'ALMO Command Center', priority: 'critical', agent: 'CTO' },
-    { id: 'ALM-55', title: 'Product catalog audit', priority: 'high', agent: 'COO' },
-  ],
-  in_review: [
-    { id: 'ALM-53', title: 'Mission Control v2 spec', priority: 'high', agent: 'CTO' },
-  ],
-  done: [
-    { id: 'ALM-52', title: 'Agent hiring framework', priority: 'medium', agent: 'DCEO' },
-    { id: 'ALM-51', title: 'Company onboarding flow', priority: 'high', agent: 'DCEO' },
-    { id: 'ALM-50', title: 'Paperclip workspace setup', priority: 'medium', agent: 'CTO' },
-  ],
-}
-
-const VELOCITY_DATA = [
-  { date: 'Mar 17', CTO: 3, CMO: 2, COO: 1, DCEO: 4 },
-  { date: 'Mar 18', CTO: 4, CMO: 3, COO: 2, DCEO: 5 },
-  { date: 'Mar 19', CTO: 2, CMO: 1, COO: 3, DCEO: 3 },
-  { date: 'Mar 20', CTO: 5, CMO: 4, COO: 2, DCEO: 6 },
-  { date: 'Mar 21', CTO: 3, CMO: 2, COO: 4, DCEO: 4 },
-  { date: 'Mar 22', CTO: 4, CMO: 3, COO: 1, DCEO: 5 },
-  { date: 'Mar 23', CTO: 2, CMO: 2, COO: 2, DCEO: 3 },
-]
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
-
-const AGENT_COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b']
 
 const STATUS_DOT: Record<string, string> = {
   online: 'status-dot-green',
@@ -76,12 +20,6 @@ const STATUS_DOT: Record<string, string> = {
   offline: 'status-dot bg-text-muted',
 }
 
-const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'border-l-accent-red',
-  high: 'border-l-accent-orange',
-  medium: 'border-l-accent-yellow',
-  low: 'border-l-text-muted',
-}
 
 export function OSView() {
   const { data: dashboard, isLoading } = useDashboard()
@@ -181,55 +119,18 @@ export function OSView() {
           icon={GitBranch}
           accent="purple"
         />
-        <div className="glass-card overflow-hidden">
-          <div className="flex items-center justify-between gap-3 border-b border-glass-border px-4 py-3 md:hidden">
-            <p className="text-xs text-text-secondary">Swipe across stages to review the full pipeline</p>
-            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-text-tertiary">Mobile scroll</span>
-          </div>
-          <div
-            data-testid="pipeline-flow-scroll"
-            className="overflow-x-auto overscroll-x-contain pb-2 [-webkit-overflow-scrolling:touch]"
-          >
-        <div className="grid grid-cols-5 gap-3 min-w-[720px] p-3">
-          {KANBAN_COLUMNS.map((col) => {
-            const tasks = MOCK_PIPELINE[col.id as keyof typeof MOCK_PIPELINE] ?? []
-            const isBottleneck = col.id === 'in_review' && tasks.length > 2
-            return (
-              <div key={col.id} className={cn('glass-card p-3', isBottleneck && 'border-accent-purple/40')}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: col.color }} />
-                    <p className="text-xs font-semibold text-white">{col.label}</p>
-                  </div>
-                  <span className={cn(
-                    'text-xs font-bold px-1.5 py-0.5 rounded',
-                    isBottleneck ? 'bg-accent-purple/20 text-accent-purple' : 'bg-glass text-text-secondary'
-                  )}>
-                    {tasks.length}
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  {tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className={cn(
-                        'glass-card p-2 border-l-2',
-                        PRIORITY_COLORS[task.priority as keyof typeof PRIORITY_COLORS]
-                      )}
-                    >
-                      <p className="text-xs text-text-secondary font-mono">{task.id}</p>
-                      <p className="text-xs text-white mt-0.5 leading-snug line-clamp-2">{task.title}</p>
-                      {task.agent && (
-                        <p className="text-xs text-accent-blue mt-1">{task.agent}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-          </div>
+        <div
+          data-testid="pipeline-flow-scroll"
+          className="glass-card p-8 flex flex-col items-center justify-center text-center border border-accent-purple/10 rounded-xl"
+        >
+          <Clock className="w-10 h-10 text-text-muted mb-3" />
+          <p className="text-base font-semibold text-white mb-1">Live Pipeline — Phase 2</p>
+          <p className="text-sm text-text-secondary max-w-sm">
+            Real-time Kanban with issue data grouped by stage will be available once the pipeline API is integrated.
+          </p>
+          <span className="mt-4 px-3 py-1 rounded-full text-xs font-medium bg-accent-purple/10 text-accent-purple border border-accent-purple/20">
+            Coming in Phase 2
+          </span>
         </div>
       </section>
 
@@ -241,26 +142,15 @@ export function OSView() {
           icon={Activity}
           accent="green"
         />
-        <div className="glass-card p-5">
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={VELOCITY_DATA} margin={{ top: 0, right: 4, bottom: 0, left: -16 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{
-                  background: 'rgba(15, 15, 24, 0.95)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '8px',
-                  fontSize: '11px',
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-              {['CTO', 'CMO', 'COO', 'DCEO'].map((agent, i) => (
-                <Bar key={agent} dataKey={agent} stackId="a" fill={AGENT_COLORS[i]} radius={i === 3 ? [4, 4, 0, 0] : undefined} />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="glass-card p-8 flex flex-col items-center justify-center text-center border border-accent-green/10 rounded-xl">
+          <Clock className="w-10 h-10 text-text-muted mb-3" />
+          <p className="text-base font-semibold text-white mb-1">Velocity Chart — Phase 2</p>
+          <p className="text-sm text-text-secondary max-w-sm">
+            Per-agent task completion trends will be tracked once velocity metrics are collected from Paperclip.
+          </p>
+          <span className="mt-4 px-3 py-1 rounded-full text-xs font-medium bg-accent-green/10 text-accent-green border border-accent-green/20">
+            Coming in Phase 2
+          </span>
         </div>
       </section>
     </div>

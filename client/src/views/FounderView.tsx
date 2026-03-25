@@ -1,10 +1,6 @@
 import { useState } from 'react'
-import { User, TrendingUp, CheckSquare, DollarSign, ShoppingCart, Lock, LogOut } from 'lucide-react'
+import { User, CheckSquare, Lock, LogOut, Clock } from 'lucide-react'
 import { SectionHeader } from '@/components/cards/SectionHeader'
-import { MetricCard } from '@/components/cards/MetricCard'
-import { MiniAreaChart } from '@/components/charts/MiniAreaChart'
-import { mockBusiness } from '@/api/mock'
-import { formatCurrency, formatPercent } from '@/lib/utils'
 
 const INITIAL_ACTION_ITEMS = [
   { id: 1, title: 'Review Q1 financial performance report', priority: 'high', dueDate: 'Mar 31', done: false },
@@ -65,7 +61,6 @@ function FounderGate({ onUnlock }: { onUnlock: () => void }) {
 export function FounderView() {
   const [unlocked, setUnlocked] = useState(false)
   const [actionItems, setActionItems] = useState(INITIAL_ACTION_ITEMS)
-  const { salla, financial } = mockBusiness
 
   const toggleItem = (id: number) => {
     setActionItems(items =>
@@ -101,54 +96,19 @@ export function FounderView() {
         </button>
       </div>
 
-      <SectionHeader title="Strategic Overview" subtitle="Key business metrics" icon={TrendingUp} accent="purple" />
-      <div data-testid="founder-overview-metrics" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <MetricCard
-          label="Monthly Revenue"
-          value={formatCurrency(salla.revenueMTD)}
-          subtitle={`${formatPercent((salla.revenueMTD / 400000) * 100)} of SAR 400K goal`}
-          icon={DollarSign}
-          accent="green"
-          trend="up"
-          trendValue="+22%"
-        />
-        <MetricCard
-          label="Orders This Month"
-          value="1,247"
-          subtitle="47 today"
-          icon={ShoppingCart}
-          accent="blue"
-          trend="up"
-          trendValue="+15%"
-        />
-        <MetricCard
-          label="Gross Margin"
-          value={formatPercent(financial.grossMargin)}
-          subtitle="Healthy range"
-          icon={TrendingUp}
-          accent="purple"
-        />
-        <MetricCard
-          label="Cash Runway"
-          value={`${financial.runwayMonths}mo`}
-          subtitle={formatCurrency(financial.cashPosition)}
-          icon={DollarSign}
-          accent="yellow"
-          trend="flat"
-          trendValue="stable"
-        />
-      </div>
-
-      <div className="glass-card p-5">
-        <p className="metric-label mb-4">Revenue Trend</p>
-        <MiniAreaChart
-          data={salla.ordersTrend}
-          xKey="date"
-          yKey="revenue"
-          color="#8b5cf6"
-          height={160}
-          tooltipFormatter={(v) => formatCurrency(v)}
-        />
+      {/* Phase 2 placeholder for Salla/financial metrics */}
+      <div
+        data-testid="founder-overview-metrics"
+        className="glass-card p-8 flex flex-col items-center justify-center text-center border border-accent-purple/10 rounded-xl"
+      >
+        <Clock className="w-10 h-10 text-text-muted mb-3" />
+        <p className="text-base font-semibold text-white mb-1">Strategic Metrics — Phase 2</p>
+        <p className="text-sm text-text-secondary max-w-sm">
+          Live Salla revenue, order, and financial data will appear here once the Salla integration is live.
+        </p>
+        <span className="mt-4 px-3 py-1 rounded-full text-xs font-medium bg-accent-purple/10 text-accent-purple border border-accent-purple/20">
+          Coming in Phase 2
+        </span>
       </div>
 
       <section>
@@ -200,7 +160,7 @@ export function FounderView() {
         <User className="w-5 h-5 text-accent-purple flex-shrink-0" />
         <div>
           <p className="text-sm text-white font-medium">Alaa — ALMO Brand Founder</p>
-          <p className="text-xs text-text-secondary">Role-gated strategic view · Salla data from mock layer</p>
+          <p className="text-xs text-text-secondary">Role-gated strategic view · Salla integration in Phase 2</p>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { pcPost, COMPANY_ID, corsHeaders } from '../_lib/pc.js'
+import { pcGet, pcPost, COMPANY_ID, corsHeaders } from '../_lib/pc.js'
 
 export default async function handler(req, res) {
   const h = corsHeaders()
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   let postedIssueIdentifier = null
   try {
-    const issues = await pcPost(`/api/companies/${COMPANY_ID}/issues?q=council+meeting&limit=3`).catch(() => [])
+    const issues = await pcGet(`/api/companies/${COMPANY_ID}/issues?q=council+meeting&limit=3`).catch(() => [])
     const target = issues[0]
     if (target) {
       await fetch(`${process.env.PAPERCLIP_API_URL}/api/issues/${target.id}/comments`, {
