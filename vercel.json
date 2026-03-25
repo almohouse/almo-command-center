@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install --include=dev && npm run build && cp -r dist ../public",
-  "outputDirectory": "public",
-  "functions": {
-    "api/**/*.js": {
-      "includeFiles": "api/_lib/**"
-    }
-  },
-  "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  "buildCommand": "cd client && npm install --include=dev && npm run build",
+  "outputDirectory": "client/dist"
 }
