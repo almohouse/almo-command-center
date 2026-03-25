@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install --include=dev && npm run build",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
