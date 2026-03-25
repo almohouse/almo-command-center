@@ -19,7 +19,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: '../public',
+    outDir: 'dist',
     emptyOutDir: true,
   },
   // Production build: no proxy needed — Vercel Serverless Functions serve /api/*
