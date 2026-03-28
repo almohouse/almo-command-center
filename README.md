@@ -1,69 +1,73 @@
-# ALMO Command Center
+# React + TypeScript + Vite
 
-The CEO cockpit for flying the entire ALMO company. Not a dashboard — a command center.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Quick Start
+Currently, two official plugins are available:
 
-```bash
-# Install all dependencies
-cd client && npm install
-cd ../server && npm install
-cd ..
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-# Start both server and client
-npm run dev
-# Client: http://localhost:5174
-# Server: http://localhost:3101
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## Architecture
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-client/   React 18 + TypeScript + Vite + Tailwind + Recharts
-server/   Express.js proxy to Paperclip API
-tests/    Playwright E2E (31 tests)
-```
-
-## Views
-
-| Tab | Path | Description |
-|-----|------|-------------|
-| Business | `/` | Salla store health, products, customer pulse, financials, blockers |
-| OS | `/os` | Agent performance matrix, pipeline kanban, task velocity |
-| Intelligence | `/intelligence` | Anomaly detection, risk radar, competitive pulse |
-| Strategy | `/strategy` | OKR tracking, product roadmap, North Star tracker |
-| Cockpit | `/cockpit` | Approval queue, direct command, agent conversations |
-| Council | `/council` | Chiefs meeting room, MoM generation |
-| Founder | `/founder` | Alaa's strategic view |
-
-## Testing
-
-```bash
-# E2E tests (requires dev server running)
-npm run test:e2e
-
-# UI mode
-npm run test:e2e:ui
-```
-
-### Deterministic Playwright auth
-
-The navigation E2E tests do not rely on whatever local browser state happened to exist before the run.
-
-- Each test clears cookies plus local/session storage via a Playwright init script.
-- The test then seeds `localStorage.almo_cc_auth = "true"` before the app loads.
-- This makes auth bypass deterministic for automated runs while keeping the real login flow intact for manual usage.
-
-## Environment
-
-```env
-PAPERCLIP_API_URL=http://127.0.0.1:3100
-PAPERCLIP_API_KEY=<your-key>
-PAPERCLIP_COMPANY_ID=979e46be-09ac-4f35-b575-1cb2074e4d57
-```
-
-## Phase Status
-
-- [x] Phase 1: Core layout + Business Layer + OS Layer
-- [ ] Phase 2: Intelligence (full) + Strategic Planning + Decision Cockpit (full)
-- [ ] Phase 3: Council Meeting (live) + Founder Portal (full) + Moe's Personal Layer
